@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React, { useEffect } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Selection from "../../screen/select/Selection";
@@ -12,10 +12,10 @@ import TeacherLogin from "../../screen/teacher/TeacherLogin";
 import UserLogin from "../../screen/teacher/login/UserLogin";
 import { Modal } from "react-native";
 import { setToken, setUserData } from "../redux/slice/authSlice";
-import Dashboard from "../../screen/dashboard/Dashboard";
 import SignUp from "../../screen/teacher/signup/SignUp";
 import CreatePIN from "../../screen/teacher/signup/CreatePIN";
 import LoginPIN from "../../components/customs/LoginPIN";
+import DrawerRoutes from "./DrawerRoutes";
 
 const Routing = () => {
   const onBoarding = useSelector((state) => state.setup.onboarding);
@@ -97,8 +97,8 @@ const Routing = () => {
         }}
       />
       <Stack.Screen
-        name="Dashboard"
-        component={Dashboard}
+        name="DrawerRoutes"
+        component={DrawerRoutes}
         options={{
           animation: "fade",
         }}
@@ -130,8 +130,8 @@ const Routing = () => {
       }}
     >
       <Stack.Screen
-        name="Dashboard"
-        component={Dashboard}
+        name="DrawerRoutes"
+        component={DrawerRoutes}
         options={{
           animation: "fade",
         }}

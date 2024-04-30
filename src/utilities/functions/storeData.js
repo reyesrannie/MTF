@@ -34,6 +34,20 @@ const setupComplete = async (filename, content) => {
   }
 };
 
+const updateFile = async (filename, content) => {
+  try {
+    const appPath = FileSystem.documentDirectory;
+    const filePath = `${appPath}${filename}`;
+
+    const contentString = JSON.stringify(content);
+    await FileSystem.writeAsStringAsync(filePath, contentString, {
+      append: true,
+    });
+  } catch (error) {
+    console.error(`Error updating file: ${error}`);
+  }
+};
+
 const readUser = async (filename) => {
   try {
     const appPath = FileSystem.documentDirectory;
@@ -46,4 +60,4 @@ const readUser = async (filename) => {
   }
 };
 
-export { onBoardingDone, readFile, setupComplete, readUser };
+export { onBoardingDone, readFile, setupComplete, readUser, updateFile };

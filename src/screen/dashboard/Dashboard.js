@@ -28,15 +28,7 @@ const Dashboard = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.topNavigation}>
-        <TouchableOpacity>
-          <Image
-            source={{ uri: userData?.profile_photo }}
-            style={styles.image}
-          />
-        </TouchableOpacity>
-        <Text>{userData?.name}</Text>
-      </View>
+      <View style={styles.topNavigation}></View>
     </View>
   );
 };
@@ -52,11 +44,5 @@ const styles = StyleSheet.create({
     padding: 10,
     flexDirection: "row",
     alignItems: "center",
-  },
-  image: {
-    width: 40,
-    height: 40,
-    borderRadius: 25,
-    marginRight: 10,
   },
 });

@@ -12,6 +12,7 @@ import {
   setMpin,
 } from "../../utilities/redux/slice/setupSlice";
 import { useNavigation } from "@react-navigation/native";
+import { readUser, setupComplete } from "../../utilities/functions/storeData";
 
 const LoginPIN = () => {
   const dispatch = useDispatch();
@@ -29,12 +30,24 @@ const LoginPIN = () => {
       dispatch(setMatchPin(mpin === userData?.mpin));
     }
     if (matchPIN) {
-      navigation.navigate("Dashboard");
+      loadSetup();
     }
     if (matchPIN === false) {
       startShakeAnimation();
     }
   }, [mpin, userData, matchPIN]);
+
+  const loadSetup = async () => {
+    try {
+      const result = await readUser("userData.json");
+      if (result === null) {
+        const res = await setupComplete("userData.json", userData);
+      }
+      navigation.navigate("DrawerRoutes");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const renderCircleIcons = () => {
     let circleIcons = [];
