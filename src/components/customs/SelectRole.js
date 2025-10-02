@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import React from "react";
 
-const SelectRole = ({ source, type, selected, onPress }) => {
+const SelectRole = ({ source, type, selected, onPress, disabled }) => {
   const styles = StyleSheet.create({
     container: {
       justifyContent: "center",
@@ -41,16 +41,23 @@ const SelectRole = ({ source, type, selected, onPress }) => {
 
   return (
     <TouchableWithoutFeedback onPress={onPress}>
-      <View style={styles.container}>
-        <Image source={source} style={styles.image} />
-        <Text style={styles.text}>{type}</Text>
-        {selected && (
-          <Image
-            source={require("../../../assets/check.png")}
-            style={styles.check}
-          />
-        )}
-      </View>
+      {disabled ? (
+        <View style={styles.container}>
+          <Image source={source} style={styles.image} />
+          <Text style={styles.text}>Availabe soon</Text>
+        </View>
+      ) : (
+        <View style={styles.container}>
+          <Image source={source} style={styles.image} />
+          <Text style={styles.text}>{type}</Text>
+          {selected && (
+            <Image
+              source={require("../../../assets/check.png")}
+              style={styles.check}
+            />
+          )}
+        </View>
+      )}
     </TouchableWithoutFeedback>
   );
 };

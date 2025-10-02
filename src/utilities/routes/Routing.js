@@ -16,6 +16,7 @@ import SignUp from "../../screen/teacher/signup/SignUp";
 import CreatePIN from "../../screen/teacher/signup/CreatePIN";
 import LoginPIN from "../../components/customs/LoginPIN";
 import DrawerRoutes from "./DrawerRoutes";
+import BottomNavigation from "./BottomNavigation";
 
 const Routing = () => {
   const onBoarding = useSelector((state) => state.setup.onboarding);
@@ -117,10 +118,17 @@ const Routing = () => {
           animation: "fade",
         }}
       />
+      <Stack.Screen
+        name="BottomNavigation"
+        component={BottomNavigation}
+        options={{
+          animation: "fade",
+        }}
+      />
     </Stack.Navigator>
   ) : (
     <Stack.Navigator
-      initialRouteName={"LoginPIN"}
+      initialRouteName={userData?.account ? "DrawerRoutes" : "LoginPIN"}
       screenOptions={{
         headerShown: false,
         transitionSpec: {
@@ -132,6 +140,13 @@ const Routing = () => {
       <Stack.Screen
         name="DrawerRoutes"
         component={DrawerRoutes}
+        options={{
+          animation: "fade",
+        }}
+      />
+      <Stack.Screen
+        name="BottomNavigation"
+        component={BottomNavigation}
         options={{
           animation: "fade",
         }}

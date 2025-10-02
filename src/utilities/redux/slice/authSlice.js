@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { readUser } from "../../functions/storeData";
 
 const initialState = {
   token: "1",

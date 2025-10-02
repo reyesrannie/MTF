@@ -2,10 +2,10 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 // const baseURL = process.env.REACT_APP_API_KEY;
 
-const baseURL = "http://10.10.10.16:8000/api";
+// const baseURL = "http://10.10.10.16:8000/api";
 // const baseURL = "http://127.0.0.1:8000/api/";
 // const baseURL = "http://192.168.254.195:8000/api/";
-// const baseURL = "http://192.168.254.132:8000/api/";
+const baseURL = "http://192.168.254.132:8000/api/";
 // const baseURL = "http://192.168.142.55:8000/api/";
 
 export const jsonServerAPI = createApi({

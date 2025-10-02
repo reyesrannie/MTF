@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   onboarding: null,
-  selected: null,
+  selected: "Student",
   isLoading: true,
   showPassword: true,
   hasError: null,

@@ -17,10 +17,9 @@ const Selection = () => {
       <Text style={styles.text}>Select role</Text>
 
       <SelectRole
+        disabled
         source={require("../../../assets/teacher.png")}
         type={"Teacher"}
-        onPress={() => dispatch(setSelected("Teacher"))}
-        selected={selected === "Teacher"}
       />
       <SelectRole
         source={require("../../../assets/students.png")}

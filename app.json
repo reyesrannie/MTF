@@ -10,9 +10,7 @@
       "image": "./assets/icon.png",
       "resizeMode": "contain"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "fonts": [
       {
         "asset": "assets/fonts/Roboto-Black.ttf"
@@ -45,12 +43,7 @@
         "projectId": "09d54229-024c-4795-ac11-24890e5f4e82"
       }
     },
-    "scheme": [
-      "facebooklogin",
-      "fb1368966653781142"
-    ],
-    "plugins": [
-      "expo-router"
-    ]
+    "scheme": ["facebooklogin", "fb1368966653781142"],
+    "plugins": ["expo-router"]
   }
 }

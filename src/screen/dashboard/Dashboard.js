@@ -1,17 +1,15 @@
-import {
-  BackHandler,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { BackHandler, ScrollView, StyleSheet, View } from "react-native";
 import React, { useEffect } from "react";
-import { readUser } from "../../utilities/functions/storeData";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import Card from "../../components/customs/Card";
+import { useNavigation } from "@react-navigation/native";
+import { setLesson } from "../../utilities/redux/slice/dataSlice";
 
 const Dashboard = () => {
-  const userData = useSelector((state) => state.auth.userData);
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+
+  const module = useSelector((state) => state.data.module);
 
   useEffect(() => {
     const backAction = () => {
@@ -26,23 +24,34 @@ const Dashboard = () => {
     return () => backHandler.remove();
   }, []);
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 10,
+      alignItems: "center",
+    },
+  });
+
   return (
     <View style={styles.container}>
-      <View style={styles.topNavigation}></View>
+      <ScrollView>
+        {module?.map((list, index) => {
+          return (
+            <Card
+              key={index}
+              module={list.module}
+              title={list.title}
+              image={list?.image}
+              onPress={() => {
+                dispatch(setLesson(list?.lesson));
+                navigation.navigate("Lesson");
+              }}
+            />
+          );
+        })}
+      </ScrollView>
     </View>
   );
 };
 
 export default Dashboard;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 20,
-  },
-  topNavigation: {
-    padding: 10,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-});

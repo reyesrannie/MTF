@@ -19,7 +19,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import loginSchema from "../../../schema/loginSchema";
 import Loading from "../../../components/customs/modal/Loading";
 import ErrorMessage from "../../../components/customs/modal/ErrorMessage";
-import { setupComplete } from "../../../utilities/functions/storeData";
 import { useNavigation } from "@react-navigation/native";
 import {
   setToken,
