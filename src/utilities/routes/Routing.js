@@ -4,7 +4,11 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Selection from "../../screen/select/Selection";
 import OnBoarding from "../../components/customs/OnBoarding";
 import { useDispatch, useSelector } from "react-redux";
-import { setIsLoading, setOnboarding } from "../redux/slice/setupSlice";
+import {
+  setCompletedSetup,
+  setIsLoading,
+  setOnboarding,
+} from "../redux/slice/setupSlice";
 import { readFile, readUser } from "../functions/storeData";
 import LottieView from "lottie-react-native";
 import StudentLogin from "../../screen/student/login/StudentLogin";
@@ -20,8 +24,10 @@ import BottomNavigation from "./BottomNavigation";
 
 const Routing = () => {
   const onBoarding = useSelector((state) => state.setup.onboarding);
+  const completedSetup = useSelector((state) => state.setup.completedSetup);
   const isLoading = useSelector((state) => state.setup.isLoading);
   const userData = useSelector((state) => state.auth.userData);
+
   const dispatch = useDispatch();
 
   const Stack = createNativeStackNavigator();
@@ -37,10 +43,8 @@ const Routing = () => {
 
   useEffect(() => {
     const loadSetup = async () => {
-      const result = await readUser("userData.json");
-      const parseResult = JSON.parse(result);
-      dispatch(setUserData(parseResult));
-      dispatch(setToken(parseResult?.token));
+      const result = await readFile("allSet.txt");
+      dispatch(setCompletedSetup(result));
     };
 
     loadSetup();
@@ -66,7 +70,7 @@ const Routing = () => {
         />
       </View>
     </Modal>
-  ) : userData === null ? (
+  ) : !completedSetup ? (
     <Stack.Navigator
       initialRouteName={onBoarding ? "selection" : "onboarding"}
       screenOptions={{
@@ -128,7 +132,7 @@ const Routing = () => {
     </Stack.Navigator>
   ) : (
     <Stack.Navigator
-      initialRouteName={userData?.account ? "DrawerRoutes" : "LoginPIN"}
+      initialRouteName={"DrawerRoutes"}
       screenOptions={{
         headerShown: false,
         transitionSpec: {

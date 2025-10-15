@@ -1,12 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-// const baseURL = process.env.REACT_APP_API_KEY;
-
-// const baseURL = "http://10.10.10.16:8000/api";
-// const baseURL = "http://127.0.0.1:8000/api/";
-// const baseURL = "http://192.168.254.195:8000/api/";
-const baseURL = "http://192.168.254.132:8000/api/";
-// const baseURL = "http://192.168.142.55:8000/api/";
+const baseURL = process.env.EXPO_PUBLIC_Base_API;
 
 export const jsonServerAPI = createApi({
   reducerPath: "jsonServerAPI",
@@ -62,6 +56,31 @@ export const jsonServerAPI = createApi({
         url: `/reset_password/${payload.id}`,
         method: "PATCH",
         body: payload,
+      }),
+    }),
+
+    subject: builder.query({
+      transformResponse: (response) => response,
+      query: (payload) => ({
+        url: `/mobile/${payload}`,
+        method: "GET",
+      }),
+    }),
+
+    module: builder.query({
+      transformResponse: (response) => response,
+      query: (payload) => ({
+        url: `/mobile/module`,
+        method: "GET",
+        params: payload,
+      }),
+    }),
+
+    subject: builder.query({
+      transformResponse: (response) => response,
+      query: (payload) => ({
+        url: `/mobile/${payload}`,
+        method: "GET",
       }),
     }),
     users: builder.query({
@@ -177,6 +196,8 @@ export const {
   usePasswordChangeMutation,
   useLogoutMutation,
   usePasswordResetMutation,
+  useLazySubjectQuery,
+  useLazyModuleQuery,
   useUsersQuery,
   useCreateUserMutation,
   useValidateEmailMutation,

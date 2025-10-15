@@ -13,6 +13,7 @@ const initialState = {
   confirmPin: false,
   matchPIN: undefined,
   errorPIN: "",
+  completedSetup: false,
 };
 
 const setupSlice = createSlice({
@@ -55,6 +56,9 @@ const setupSlice = createSlice({
     setErrorPIN: (state, action) => {
       state.errorPIN = action.payload;
     },
+    setCompletedSetup: (state, action) => {
+      state.completedSetup = action.payload;
+    },
     resetSetup: () => {
       return initialState;
     },
@@ -74,6 +78,7 @@ export const {
   setConfirmPin,
   setMatchPin,
   setErrorPIN,
+  setCompletedSetup,
   resetSetup,
 } = setupSlice.actions;
 

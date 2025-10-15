@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Card from "../../components/customs/Card";
 import { useNavigation } from "@react-navigation/native";
 import { setLesson } from "../../utilities/redux/slice/dataSlice";
+import { getItemsArray } from "../../utilities/functions/databaseSetup";
 
 const Dashboard = () => {
   const navigation = useNavigation();
@@ -32,6 +33,15 @@ const Dashboard = () => {
     },
   });
 
+  const getLesson = async () => {
+    try {
+      const getLessonDB = await getItemsArray("Lesson");
+      console.log(getLessonDB);
+      dispatch(setLesson(getLessonDB));
+      navigation.navigate("Lesson");
+    } catch (error) {}
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView>
@@ -39,12 +49,11 @@ const Dashboard = () => {
           return (
             <Card
               key={index}
-              module={list.module}
+              module={list.name}
               title={list.title}
               image={list?.image}
               onPress={() => {
-                dispatch(setLesson(list?.lesson));
-                navigation.navigate("Lesson");
+                getLesson();
               }}
             />
           );

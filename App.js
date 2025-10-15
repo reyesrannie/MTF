@@ -6,8 +6,9 @@ import { Provider } from "react-redux";
 import { store } from "./src/utilities/redux/store/store";
 import { useFonts } from "expo-font";
 import LottieView from "lottie-react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal } from "react-native";
+import { initDB } from "./src/utilities/functions/databaseSetup";
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -26,6 +27,11 @@ export default function App() {
       setIsLoading(false);
     }
   };
+  useEffect(() => {
+    initDB().then(() => {
+      console.log("DB setup complete, you can now insert or query.");
+    });
+  }, []);
 
   if (!fontsLoaded || isLoading) {
     return (

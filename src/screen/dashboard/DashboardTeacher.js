@@ -10,6 +10,7 @@ import { setOpenModal } from "../../utilities/redux/slice/modalSlice";
 import Subject from "../../components/customs/modal/Subject";
 import { pathFitOne } from "../../utilities/constants/initialContents";
 import { FlatList } from "react-native-gesture-handler";
+import { getItems, getItemsArray } from "../../utilities/functions/databaseSetup";
 
 const DashboardTeacher = () => {
   const openModal = useSelector((state) => state.modal.openModal);
@@ -51,10 +52,18 @@ const DashboardTeacher = () => {
     },
   });
 
+  const getSubjects = async () => {
+    try {
+      const getSubjectDB = await getItemsArray("Subject");
+      console.log(getSubjectDB);
+      return getSubjectDB;
+    } catch (error) {}
+  };
+
   return (
     <View style={styles.container}>
       <FlatList
-        data={pathFitOne}
+        data={getSubjects()}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <Card

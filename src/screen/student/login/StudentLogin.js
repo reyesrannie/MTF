@@ -1,17 +1,36 @@
 import { StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { Image } from "react-native";
 import AppTextBox from "../../../components/customs/AppTextBox";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import studentSchema from "../../../schema/studentSchema";
-import { pathFitOne } from "../../../utilities/constants/initialContents";
-import { setupComplete } from "../../../utilities/functions/storeData";
 import { useNavigation } from "@react-navigation/native";
 
-const StudentLogin = () => {
-  const navigation = useNavigation();
+import {
+  useLazyModuleQuery,
+  useLazySubjectQuery,
+} from "../../../utilities/redux/store/request";
+import {
+  getItems,
+  insertOrIgnore,
+} from "../../../utilities/functions/databaseSetup";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import {
+  downloadFile,
+  onBoardingDone,
+  readFile,
+  readUser,
+  setupComplete,
+} from "../../../utilities/functions/storeData";
+import { useDispatch } from "react-redux";
+import { setCompletedSetup } from "../../../utilities/redux/slice/setupSlice";
+import Loading from "../../../components/customs/modal/Loading";
 
+const StudentLogin = () => {
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
+  const [rendering, setRendering] = useState(false);
   const {
     control,
     handleSubmit,
@@ -21,29 +40,99 @@ const StudentLogin = () => {
   } = useForm({
     resolver: yupResolver(studentSchema),
     defaultValues: {
-      lesson_password: "",
+      accessCode: "",
     },
   });
 
+  const [getSubject, { isLoading: loadingSubject }] = useLazySubjectQuery();
+
   const submitHandler = async (submitData) => {
     try {
-      if (submitData?.lesson_password === process.env.EXPO_PUBLIC_Lesson_Code) {
-        const obj = {
-          account: "Student",
-        };
+      await setupComplete("PendingDownloads.json", []);
+      const res = await getSubject(submitData?.accessCode).unwrap();
+      setRendering(true);
+      await insertOrIgnore("Subject", {
+        objectID: res?.data?.id,
+        name: res?.data?.name,
+      });
+      const getSubjectDB = await getItems("Subject", {
+        objectID: res?.data?.id,
+      });
 
-        const res = await setupComplete("userData.json", { ...obj });
-        navigation.navigate("DrawerRoutes");
-      } else {
-        setError("lesson_password", {
-          message: "Code doesn't match!",
-          type: "validate",
+      for (const module of res?.data?.modules || []) {
+        await insertOrIgnore("Module", {
+          objectID: module?.id,
+          subject_object_id: res?.data?.id,
+          subject_id: getSubjectDB?.id,
+          title: module?.title,
+          name: module?.name,
         });
+        const getModuleDB = await getItems("Module", {
+          objectID: module?.id,
+        });
+
+        for (const lesson of module?.lessons || []) {
+          await insertOrIgnore("Lesson", {
+            objectID: lesson?.id,
+            module_object_id: module?.id,
+            module_id: getModuleDB?.id,
+            title: lesson?.title,
+            description: lesson?.description,
+          });
+          const getLessonDB = await getItems("Lesson", {
+            objectID: lesson?.id,
+          });
+
+          for (const content of lesson?.content || []) {
+            await insertOrIgnore("Content", {
+              objectID: content?.id,
+              lesson_object_id: lesson?.id,
+              lesson_id: getLessonDB?.id,
+              topic: content?.topic,
+            });
+            const getContentDB = await getItems("Content", {
+              objectID: content?.id,
+            });
+
+            for (const component of content?.component || []) {
+              await insertOrIgnore("Component", {
+                objectID: component?.id,
+                content_object_id: content?.id,
+                content_id: getContentDB?.id,
+                name: component?.name,
+                definition: component?.definition,
+                image: "",
+                video: "",
+              });
+
+              await insertOrIgnore("Component", {
+                objectID: component?.id,
+                content_object_id: content?.id,
+                content_id: getContentDB?.id,
+                name: component?.name,
+                definition: component?.definition,
+                image: "",
+                video: "",
+              });
+
+              await insertOrIgnore("ForDownloads", {
+                objectID: component?.id,
+                image: "",
+                video: "",
+              });
+            }
+          }
+        }
       }
+      onBoardingDone("allSet.txt", "true");
+      dispatch(setCompletedSetup(true));
+      setRendering(false);
+      navigation.navigate("DrawerRoutes");
     } catch (error) {
-      setError("lesson_password", {
-        message: "Code doesn't match!",
-        type: "validate",
+      console.log(error);
+      setError("accessCode", {
+        type: "manual",
+        message: error?.data?.message,
       });
     }
   };
@@ -63,13 +152,17 @@ const StudentLogin = () => {
 
       <AppTextBox
         control={control}
-        name={"lesson_password"}
+        name={"accessCode"}
         placeholder="Enter Code"
-        error={Boolean(errors?.lesson_password)}
-        helperText={errors?.lesson_password?.message}
-        endIcon={watch("lesson_password") && "arrow-right"}
+        error={Boolean(errors?.accessCode)}
+        helperText={errors?.accessCode?.message}
+        // endIcon={watch("accessCode") && "arrow-right"}
         onPress={handleSubmit(submitHandler)}
+        onSubmitEditing={handleSubmit(submitHandler)}
+        // onSubmitEditing={() => dumpTable("Subject")}
       />
+
+      <Loading open={loadingSubject || rendering} />
     </View>
   );
 };

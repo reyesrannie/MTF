@@ -12,7 +12,7 @@ const Loading = ({ open }) => {
           source={require("../../../../assets/loading.json")}
           loop={open}
         />
-        <Text>LOADING....</Text>
+        <Text style={styles.loadingText}>LOADING....</Text>
       </View>
     </Modal>
   );
@@ -30,5 +30,10 @@ const styles = StyleSheet.create({
   lottie: {
     width: 300,
     height: 300,
+  },
+  loadingText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 20,
   },
 });
