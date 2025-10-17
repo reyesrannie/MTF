@@ -18,13 +18,13 @@ import { setOpenModalImage } from "../../utilities/redux/slice/modalSlice";
 import { setImageData } from "../../utilities/redux/slice/dataSlice";
 
 const Photos = () => {
-  const contentData = useSelector((state) => state.data.contentData);
+  const componentData = useSelector((state) => state.data.componentData);
   const openModalImage = useSelector((state) => state.modal.openModalImage);
   const imageData = useSelector((state) => state.data.imageData);
   const dispatch = useDispatch();
 
   const [show, setShow] = useState(0);
-  const [showContent, setShowContent] = useState(0);
+  const [showContent, setShowContent] = useState(null);
 
   // Enable layout animation on Android
   if (
@@ -56,45 +56,38 @@ const Photos = () => {
   return (
     <View style={styles.container}>
       <FlatList
-        data={contentData}
+        data={componentData}
         keyExtractor={(item, index) => `content-${index}`}
         renderItem={({ item, index }) => (
           <View>
-            <TouchableWithoutFeedback onPress={() => handlePress(index)}>
+            <TouchableWithoutFeedback
+              onPress={() => {
+                console.log(index);
+                handlePress(index);
+              }}
+            >
               <View style={styles.accordionTitle}>
-                <Text style={styles.topic}>{item?.topic}</Text>
+                <Text style={styles.topic}>{item?.name}</Text>
               </View>
             </TouchableWithoutFeedback>
             {show === index && (
-              <FlatList
-                data={item?.component}
-                keyExtractor={(comp, compIndex) => `component-${compIndex}`}
-                renderItem={({ item: comp, index: compIndex }) => (
-                  <View style={styles.viewContent}>
+              <View style={styles.viewContent}>
+                <View style={styles.contents}>
+                  {item?.image && (
                     <TouchableWithoutFeedback
-                      onPress={() => handleShowContent(compIndex)}
+                      onPress={() => {
+                        dispatch(setImageData({ uri: item.image }));
+                        dispatch(setOpenModalImage(true));
+                      }}
                     >
-                      <View style={styles.buttonTitle}>
-                        <Text style={styles.topicTitle}>{comp?.name}</Text>
-                      </View>
+                      <Image
+                        style={styles.image}
+                        source={{ uri: item.image }}
+                      />
                     </TouchableWithoutFeedback>
-                    {showContent === compIndex && (
-                      <View style={styles.contents}>
-                        {comp?.image && (
-                          <TouchableWithoutFeedback
-                            onPress={() => {
-                              dispatch(setImageData(comp.image));
-                              dispatch(setOpenModalImage(true));
-                            }}
-                          >
-                            <Image style={styles.image} source={comp.image} />
-                          </TouchableWithoutFeedback>
-                        )}
-                      </View>
-                    )}
-                  </View>
-                )}
-              />
+                  )}
+                </View>
+              </View>
             )}
           </View>
         )}
@@ -107,7 +100,9 @@ const Photos = () => {
       >
         <TouchableWithoutFeedback
           style={styles.modalContainer}
-          onPress={() => dispatch(setOpenModalImage(false))}
+          onPress={() => {
+            dispatch(setOpenModalImage(false));
+          }}
         >
           <Image style={styles.modalImage} source={imageData} />
         </TouchableWithoutFeedback>

@@ -18,13 +18,13 @@ import { setOpenModalImage } from "../../utilities/redux/slice/modalSlice";
 import { setImageData } from "../../utilities/redux/slice/dataSlice";
 
 const VideoClips = () => {
-  const contentData = useSelector((state) => state.data.contentData);
+  const componentData = useSelector((state) => state.data.componentData);
   const openModalImage = useSelector((state) => state.modal.openModalImage);
   const imageData = useSelector((state) => state.data.imageData);
   const dispatch = useDispatch();
 
-  const [show, setShow] = useState(0);
-  const [showContent, setShowContent] = useState(0);
+  const [show, setShow] = useState(null);
+  const [showContent, setShowContent] = useState(null);
 
   // Enable layout animation on Android
   if (
@@ -56,45 +56,35 @@ const VideoClips = () => {
   return (
     <View style={styles.container}>
       <FlatList
-        data={contentData}
+        data={componentData}
         keyExtractor={(item, index) => `content-${index}`}
         renderItem={({ item, index }) => (
           <View>
-            <TouchableWithoutFeedback onPress={() => handlePress(index)}>
+            <TouchableWithoutFeedback
+              onPress={() => {
+                console.log(index);
+                handlePress(index);
+              }}
+            >
               <View style={styles.accordionTitle}>
-                <Text style={styles.topic}>{item?.topic}</Text>
+                <Text style={styles.topic}>{item?.name}</Text>
               </View>
             </TouchableWithoutFeedback>
             {show === index && (
-              <FlatList
-                data={item?.component}
-                keyExtractor={(comp, compIndex) => `component-${compIndex}`}
-                renderItem={({ item: comp, index: compIndex }) => (
-                  <View style={styles.viewContent}>
-                    <TouchableWithoutFeedback
-                      onPress={() => handleShowContent(compIndex)}
-                    >
-                      <View style={styles.buttonTitle}>
-                        <Text style={styles.topicTitle}>{comp?.name}</Text>
-                      </View>
-                    </TouchableWithoutFeedback>
-                    {showContent === compIndex && (
-                      <View style={styles.contents}>
-                        {comp?.video && (
-                          <Video
-                            source={{ uri: comp.video }}
-                            style={styles.backgroundVideo}
-                            controls
-                            onBuffer={handleBuffer}
-                            onError={handleVideoError}
-                            paused
-                          />
-                        )}
-                      </View>
-                    )}
-                  </View>
-                )}
-              />
+              <View style={styles.viewContent}>
+                <View style={styles.contents}>
+                  {item?.video && (
+                    <Video
+                      source={{ uri: item.video }}
+                      style={styles.backgroundVideo}
+                      controls
+                      onBuffer={handleBuffer}
+                      onError={handleVideoError}
+                      paused
+                    />
+                  )}
+                </View>
+              </View>
             )}
           </View>
         )}

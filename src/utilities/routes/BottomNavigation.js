@@ -1,40 +1,34 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import React from "react";
-import Content from "../../screen/dashboard/Content";
 import CustomDrawerButton from "../../components/customs/CustomDrawerButton";
 import { StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
 import CustomDrawerContent from "../../components/customs/CustomDrawerContent";
 import { useNavigation } from "@react-navigation/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useDispatch, useSelector } from "react-redux";
-import { setContent, setLesson } from "../redux/slice/dataSlice";
-import Photos from "../../screen/dashboard/Photos";
-import VideoClips from "../../screen/dashboard/VideoClips";
+import { setComponent } from "../redux/slice/dataSlice";
+
+import Component from "../../screen/dashboard/Component";
+import ComingSoon from "../../components/customs/ComingSoon";
 
 const BottomNavigation = () => {
   const Tab = createBottomTabNavigator();
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
-  const contentData = useSelector((state) => state.data.contentData);
   const userData = useSelector((state) => state.auth.userData);
 
   return (
     <Tab.Navigator
-      initialRouteName="Content"
+      initialRouteName="Component"
       screenOptions={{
         headerLeft: () => null,
         headerTitle: () => (
           <TouchableWithoutFeedback
             onPress={() => {
-              contentData === null && dispatch(setLesson(null));
-              contentData !== null && dispatch(setContent(null));
-
-              navigation.navigate(
-                contentData !== null ? "Lesson" : "Dashboard"
-              );
+              dispatch(setComponent([]));
+              navigation.navigate("Content");
             }}
           >
             <Ionicons name="arrow-back" size={24} color="black" />
@@ -54,27 +48,35 @@ const BottomNavigation = () => {
             />
           ),
         }}
-        name="Content"
-        component={Content}
+        name="Component"
+        component={Component}
       />
 
       <Tab.Screen
+        name="Coming soon"
+        component={ComingSoon}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <FontAwesome name="photo" size={size} color={color} />
+            <MaterialCommunityIcons
+              name="ab-testing"
+              size={size}
+              color={color}
+            />
           ),
         }}
-        name="Photos"
-        component={Photos}
       />
       <Tab.Screen
         options={{
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="video" size={size} color={color} />
+            <MaterialCommunityIcons
+              name="gamepad-variant-outline"
+              size={size}
+              color={color}
+            />
           ),
         }}
-        name="Videos"
-        component={VideoClips}
+        name="Coming soon!"
+        component={ComingSoon}
       />
     </Tab.Navigator>
   );

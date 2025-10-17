@@ -10,8 +10,9 @@ import { useNavigation } from "@react-navigation/native";
 import VerifyAccount from "../../screen/teacher/account/VerifyAccount";
 import Lesson from "../../screen/dashboard/Lesson";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { setLesson, setModule } from "../redux/slice/dataSlice";
+import { setContent, setLesson, setModule } from "../redux/slice/dataSlice";
 import DashboardTeacher from "../../screen/dashboard/DashboardTeacher";
+import Content from "../../screen/dashboard/Content";
 
 const DrawerRoutes = () => {
   const dispatch = useDispatch();
@@ -21,6 +22,17 @@ const DrawerRoutes = () => {
   const Drawer = createDrawerNavigator();
   const module = useSelector((state) => state.data.module);
   const lessonData = useSelector((state) => state.data.lessonData);
+  const contentData = useSelector((state) => state.data.contentData);
+
+  const routeTo = () => {
+    if (contentData !== null) {
+      dispatch(setContent(null));
+      navigation.navigate("Lesson");
+    } else {
+      dispatch(setLesson(null));
+      navigation.navigate("Dashboard");
+    }
+  };
 
   return (
     <Drawer.Navigator
@@ -31,8 +43,7 @@ const DrawerRoutes = () => {
           lessonData !== null ? (
             <TouchableWithoutFeedback
               onPress={() => {
-                dispatch(setLesson(null));
-                navigation.navigate("Dashboard");
+                routeTo();
               }}
             >
               <Ionicons name="arrow-back" size={24} color="black" />
@@ -62,6 +73,7 @@ const DrawerRoutes = () => {
       <Drawer.Screen name="Dashboard" component={Dashboard} />
       <Drawer.Screen name="DashTeacher" component={DashboardTeacher} />
       <Drawer.Screen name="Lesson" component={Lesson} />
+      <Drawer.Screen name="Content" component={Content} />
       <Drawer.Screen name="AccountSettings" component={AccountSettings} />
       <Drawer.Screen name="VerifyAccount" component={VerifyAccount} />
     </Drawer.Navigator>

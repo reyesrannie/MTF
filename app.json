@@ -2,6 +2,7 @@
   "expo": {
     "name": "MTF",
     "slug": "MTF",
+    "owner": "rannie.reyes",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -10,7 +11,9 @@
       "image": "./assets/icon.png",
       "resizeMode": "contain"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "fonts": [
       {
         "asset": "assets/fonts/Roboto-Black.ttf"
@@ -38,12 +41,20 @@
     "web": {
       "favicon": "./assets/icon.png"
     },
+    "scheme": [
+      "facebooklogin",
+      "fb1368966653781142"
+    ],
+    "plugins": [
+      "expo-router"
+    ],
     "extra": {
+      "router": {
+        "origin": false
+      },
       "eas": {
-        "projectId": "09d54229-024c-4795-ac11-24890e5f4e82"
+        "projectId": "8977f2ff-d211-4dd3-9e25-a679566f5b9b"
       }
-    },
-    "scheme": ["facebooklogin", "fb1368966653781142"],
-    "plugins": ["expo-router"]
+    }
   }
 }

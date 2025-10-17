@@ -3,14 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { keys } from "../../utilities/constants/keys";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setCmpin,
-  setConfirmPin,
-  setErrorPIN,
-  setMatchPin,
-  setMpin,
-} from "../../utilities/redux/slice/setupSlice";
-import { useNavigation } from "@react-navigation/native";
+import { setErrorPIN } from "../../utilities/redux/slice/setupSlice";
 
 const CustomKey = ({ handleInsert, handleInsertConfirm }) => {
   const dispatch = useDispatch();

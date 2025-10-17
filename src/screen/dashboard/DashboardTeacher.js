@@ -3,17 +3,23 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Card from "../../components/customs/Card";
 import { useNavigation } from "@react-navigation/native";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { TouchableOpacity } from "react-native";
-import { setModule } from "../../utilities/redux/slice/dataSlice";
-import { setOpenModal } from "../../utilities/redux/slice/modalSlice";
+import {
+  setModule,
+  setModuleCompletion,
+} from "../../utilities/redux/slice/dataSlice";
 import Subject from "../../components/customs/modal/Subject";
-import { pathFitOne } from "../../utilities/constants/initialContents";
 import { FlatList } from "react-native-gesture-handler";
-import { getItems, getItemsArray } from "../../utilities/functions/databaseSetup";
+import {
+  getItemsArray,
+  getPercentage,
+} from "../../utilities/functions/databaseSetup";
 
 const DashboardTeacher = () => {
   const openModal = useSelector((state) => state.modal.openModal);
+  const subjectData = useSelector((state) => state.data.subjectData);
+  const subjectCompletion = useSelector(
+    (state) => state.data.subjectCompletion
+  );
 
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -52,29 +58,42 @@ const DashboardTeacher = () => {
     },
   });
 
-  const getSubjects = async () => {
+  const handleGetModule = async (data) => {
     try {
-      const getSubjectDB = await getItemsArray("Subject");
-      console.log(getSubjectDB);
-      return getSubjectDB;
-    } catch (error) {}
+      const getModules = await getItemsArray("Module", {
+        subject_object_id: data?.objectID,
+      });
+      dispatch(setModule(getModules));
+
+      const res = await getPercentage("Module");
+      dispatch(setModuleCompletion(res));
+      navigation.navigate("Dashboard");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
     <View style={styles.container}>
       <FlatList
-        data={getSubjects()}
+        data={subjectData}
         keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <Card
-            module={item.subject}
-            title={item.accessCode}
-            onPress={() => {
-              dispatch(setModule(item?.module));
-              navigation.navigate("Dashboard");
-            }}
-          />
-        )}
+        renderItem={({ item }) => {
+          const percent = subjectCompletion?.find(
+            (sub) => sub?.objectID === item?.objectID
+          )?.completion_percentage;
+
+          return (
+            <Card
+              module={item.name}
+              title={item.accessCode}
+              percentage={percent}
+              onPress={() => {
+                handleGetModule(item);
+              }}
+            />
+          );
+        }}
       />
 
       {/* {!userData?.account && (

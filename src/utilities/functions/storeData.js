@@ -81,7 +81,12 @@ const downloadFile = async (filePath) => {
   }
 };
 
-const downloadFileWithProgress = async (dispatch, filePath, componentID) => {
+const downloadFileWithProgress = async (
+  dispatch,
+  filePath,
+  componentID,
+  type
+) => {
   if (!filePath) return null;
 
   const url = `${BASE_URL}${filePath}`;
@@ -95,7 +100,7 @@ const downloadFileWithProgress = async (dispatch, filePath, componentID) => {
       {},
       ({ totalBytesWritten, totalBytesExpectedToWrite }) => {
         const progress = totalBytesWritten / totalBytesExpectedToWrite;
-        dispatch(setUpdateDownloadProgress({ componentID, progress }));
+        dispatch(setUpdateDownloadProgress({ componentID, type, progress }));
       }
     );
 

@@ -1,197 +1,104 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-  FlatList,
-  Image,
-  Modal,
-  StyleSheet,
-  Text,
-  TouchableWithoutFeedback,
-  View,
-  LayoutAnimation,
-  UIManager,
-  Platform,
-} from "react-native";
+import React, { useEffect } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import Card from "../../components/customs/Card";
 import { useNavigation } from "@react-navigation/native";
-import Video from "react-native-video";
-import { setOpenModalImage } from "../../utilities/redux/slice/modalSlice";
-import { setImageData } from "../../utilities/redux/slice/dataSlice";
+import {
+  setComponent,
+  setComponentCompletion,
+  setLesson,
+} from "../../utilities/redux/slice/dataSlice";
+import {
+  getItemsArray,
+  getPercentage,
+  updateItem,
+} from "../../utilities/functions/databaseSetup";
 
 const Content = () => {
-  const contentData = useSelector((state) => state.data.contentData);
-  const openModalImage = useSelector((state) => state.modal.openModalImage);
-  const imageData = useSelector((state) => state.data.imageData);
   const dispatch = useDispatch();
+  const contentData = useSelector((state) => state.data.contentData);
+  const contentCompletion = useSelector(
+    (state) => state.data.contentCompletion
+  );
 
-  const [show, setShow] = useState(null);
-  const [showContent, setShowContent] = useState(null);
+  const navigation = useNavigation();
 
-  // Enable layout animation on Android
-  if (
-    Platform.OS === "android" &&
-    UIManager.setLayoutAnimationEnabledExperimental
-  ) {
-    UIManager.setLayoutAnimationEnabledExperimental(true);
-  }
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 10,
+      alignItems: "center",
+      borderRadius: 10,
+    },
+  });
 
-  const handlePress = (index) => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setShow(show === index ? null : index);
-    setShowContent(null);
+  const handleGetComponent = async (data) => {
+    try {
+      const getComponent = await getItemsArray("Component", {
+        content_object_id: data?.objectID,
+      });
+      dispatch(setComponent(getComponent));
+      const res = await getPercentage("Component");
+      dispatch(setComponentCompletion(res));
+
+      navigation.navigate("BottomNavigation");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const handleShowContent = (index) => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setShowContent(showContent === index ? null : index);
-  };
+  useEffect(() => {
+    if (contentData?.every((item) => item?.isDone === 1)) {
+      updateLesson();
+    }
+  }, [contentData]);
 
-  const handleBuffer = () => {
-    console.log("Buffering video...");
-  };
+  const updateLesson = async () => {
+    try {
+      await updateItem(
+        "Lesson",
+        { objectID: contentData[0]?.lesson_object_id },
+        {
+          isDone: 1,
+        }
+      );
+      const updatedLesson = await getItemsArray("Lesson", {
+        objectID: contentData[0]?.lesson_object_id,
+      });
 
-  const handleVideoError = (error) => {
-    console.error("Video Error:", error);
+      dispatch(setLesson(updatedLesson));
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={contentData}
-        keyExtractor={(item, index) => `content-${index}`}
-        renderItem={({ item, index }) => (
-          <View>
-            <TouchableWithoutFeedback onPress={() => handlePress(index)}>
-              <View style={styles.accordionTitle}>
-                <Text style={styles.topic}>{item?.topic}</Text>
-              </View>
-            </TouchableWithoutFeedback>
+      <ScrollView>
+        {contentData?.map((list, index) => {
+          const percent = contentCompletion?.find(
+            (les) => les?.objectID === list?.objectID
+          )?.completion_percentage;
 
-            {show === index && (
-              <FlatList
-                data={item?.component}
-                keyExtractor={(comp, compIndex) => `component-${compIndex}`}
-                renderItem={({ item: comp, index: compIndex }) => (
-                  <View style={styles.viewContent}>
-                    <TouchableWithoutFeedback
-                      onPress={() => handleShowContent(compIndex)}
-                    >
-                      <View style={styles.buttonTitle}>
-                        <Text style={styles.topicTitle}>{comp?.name}</Text>
-                      </View>
-                    </TouchableWithoutFeedback>
+          const prevItem = contentData[index - 1];
+          const isPrevDone = !prevItem || prevItem.isDone === 1;
+          const isDisabled = !isPrevDone;
 
-                    {showContent === compIndex && (
-                      <View style={styles.contents}>
-                        <Text style={styles.definition}>
-                          {comp?.definition}
-                        </Text>
-
-                        {comp?.image && (
-                          <TouchableWithoutFeedback
-                            onPress={() => {
-                              dispatch(setImageData(comp.image));
-                              dispatch(setOpenModalImage(true));
-                            }}
-                          >
-                            <Image style={styles.image} source={comp.image} />
-                          </TouchableWithoutFeedback>
-                        )}
-
-                        {comp?.video && (
-                          <Video
-                            source={{ uri: comp.video }}
-                            style={styles.backgroundVideo}
-                            controls
-                            onBuffer={handleBuffer}
-                            onError={handleVideoError}
-                          />
-                        )}
-                      </View>
-                    )}
-                  </View>
-                )}
-              />
-            )}
-          </View>
-        )}
-      />
-
-      <Modal
-        visible={openModalImage}
-        transparent
-        onRequestClose={() => dispatch(setOpenModalImage(false))}
-      >
-        <TouchableWithoutFeedback
-          style={styles.modalContainer}
-          onPress={() => dispatch(setOpenModalImage(false))}
-        >
-          <Image style={styles.modalImage} source={imageData} />
-        </TouchableWithoutFeedback>
-      </Modal>
+          return (
+            <Card
+              disabled={isDisabled}
+              key={index}
+              module={list?.topic}
+              percentage={percent}
+              onPress={() => {
+                !isDisabled && handleGetComponent(list);
+              }}
+            />
+          );
+        })}
+      </ScrollView>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 10,
-    borderRadius: 10,
-  },
-  topic: {
-    fontFamily: "Roboto-Bold",
-    fontSize: 20,
-    alignSelf: "center",
-  },
-  accordionTitle: {
-    backgroundColor: "#f4ce92",
-    borderRadius: 10,
-    padding: 10,
-    margin: 10,
-  },
-  viewContent: {
-    backgroundColor: "#FFFFFF",
-  },
-  buttonTitle: {
-    backgroundColor: "#1a1d24",
-    borderRadius: 10,
-    margin: 5,
-  },
-  topicTitle: {
-    fontFamily: "Roboto-Bold",
-    fontSize: 20,
-    alignSelf: "center",
-    color: "#f4ce92",
-  },
-  contents: {
-    margin: 10,
-  },
-  definition: {
-    fontFamily: "Roboto-Light",
-    fontSize: 10,
-    textAlign: "justify",
-  },
-  image: {
-    alignSelf: "center",
-    width: 200,
-    height: 200,
-    resizeMode: "contain",
-  },
-  backgroundVideo: {
-    height: 200,
-    resizeMode: "contain",
-  },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalImage: {
-    width: "90%",
-    height: "90%",
-    resizeMode: "contain",
-  },
-});
 
 export default Content;

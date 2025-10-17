@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Image } from "react-native";
 import AppTextBox from "../../../components/customs/AppTextBox";
 import { set, useForm } from "react-hook-form";
@@ -26,10 +26,12 @@ import {
 import { useDispatch } from "react-redux";
 import { setCompletedSetup } from "../../../utilities/redux/slice/setupSlice";
 import Loading from "../../../components/customs/modal/Loading";
+import { setUpdateDownloadProgress } from "../../../utilities/redux/slice/dataSlice";
 
 const StudentLogin = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
+
   const [rendering, setRendering] = useState(false);
   const {
     control,
@@ -105,20 +107,16 @@ const StudentLogin = () => {
                 video: "",
               });
 
-              await insertOrIgnore("Component", {
+              await insertOrIgnore("ForDownloads", {
                 objectID: component?.id,
-                content_object_id: content?.id,
-                content_id: getContentDB?.id,
-                name: component?.name,
-                definition: component?.definition,
-                image: "",
-                video: "",
+                type: "image",
+                file: component?.image,
               });
 
               await insertOrIgnore("ForDownloads", {
                 objectID: component?.id,
-                image: "",
-                video: "",
+                type: "video",
+                file: component?.video,
               });
             }
           }
@@ -129,6 +127,7 @@ const StudentLogin = () => {
       setRendering(false);
       navigation.navigate("DrawerRoutes");
     } catch (error) {
+      setRendering(false);
       console.log(error);
       setError("accessCode", {
         type: "manual",

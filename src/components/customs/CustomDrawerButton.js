@@ -9,7 +9,7 @@ const CustomDrawerButton = () => {
 
   return (
     <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
-      <Image source={{ uri: userData?.profile_photo }} style={styles.image} />
+      {/* <Image source={{ uri: userData?.profile_photo }} style={styles.image} /> */}
     </TouchableOpacity>
   );
 };

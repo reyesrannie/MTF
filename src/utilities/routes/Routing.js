@@ -15,7 +15,6 @@ import StudentLogin from "../../screen/student/login/StudentLogin";
 import TeacherLogin from "../../screen/teacher/TeacherLogin";
 import UserLogin from "../../screen/teacher/login/UserLogin";
 import { Modal } from "react-native";
-import { setToken, setUserData } from "../redux/slice/authSlice";
 import SignUp from "../../screen/teacher/signup/SignUp";
 import CreatePIN from "../../screen/teacher/signup/CreatePIN";
 import LoginPIN from "../../components/customs/LoginPIN";
@@ -26,7 +25,6 @@ const Routing = () => {
   const onBoarding = useSelector((state) => state.setup.onboarding);
   const completedSetup = useSelector((state) => state.setup.completedSetup);
   const isLoading = useSelector((state) => state.setup.isLoading);
-  const userData = useSelector((state) => state.auth.userData);
 
   const dispatch = useDispatch();
 

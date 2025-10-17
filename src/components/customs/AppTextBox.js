@@ -43,7 +43,7 @@ const AppTextBox = ({
       flexDirection: "row",
       borderWidth: 1,
       borderColor: error ? "#ff4546" : "#6f65a1",
-      width: 300,
+      width: "100%",
       borderRadius: 10,
       padding: 7,
       minHeight: 50,
@@ -54,8 +54,7 @@ const AppTextBox = ({
       color: "#6f65a1",
     },
     input: {
-      maxWidth: 220,
-      minWidth: 220,
+      minWidth: "80%",
     },
     code: {
       minWidth: 10,
